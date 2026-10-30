@@ -1,8 +1,8 @@
 <!--
 Sync Impact Report
-Version change: Unversioned scaffold -> 1.0.0
-Modified principles: None; the scaffold had placeholders only. Five project principles are defined below.
-Added sections: Project Constraints; Development Workflow & Quality Gates.
+Version change: 1.0.0 -> 1.0.1
+Modified principles: III. Verified Quality (made security-related test expectations explicit).
+Added sections: None.
 Removed sections: None.
 Follow-up TODOs: Confirm the original ratification date.
 -->
@@ -28,9 +28,11 @@ support incremental development without burdening the proof of concept with spec
 ### III. Verified Quality
 Every new or changed behavior MUST have automated tests at the appropriate unit or integration
 level. Tests MUST check the stated behavior, including the observable result of adding and listing a
-subscription. Run the relevant tests and build before declaring a change complete, and fix failures
-caused by the change. Review changes for correctness, clarity, and regressions; a passing build
-alone does not establish feature correctness.
+subscription. When a feature adds network or feed-content handling, tests MUST cover the required
+URL restrictions, bounded requests, output encoding, and specified failure behavior. Run the
+relevant tests and build before declaring a change complete, and fix failures caused by the change.
+Review changes for correctness, clarity, and regressions; a passing build alone does not establish
+feature correctness.
 
 ### IV. Scope Discipline
 The MVP is limited to adding a subscription URL and displaying the subscription list, with
@@ -84,4 +86,4 @@ governance, and PATCH for clarifications and non-semantic wording changes. Revie
 feature planning and change review, and verify that tests and builds appropriate to the change have
 passed before acceptance.
 
-**Version**: 1.0.0 | **Ratified**: TODO(RATIFICATION_DATE): Original adoption date is unknown. | **Last Amended**: 2026-10-27
+**Version**: 1.0.1 | **Ratified**: TODO(RATIFICATION_DATE): Original adoption date is unknown. | **Last Amended**: 2026-10-29
