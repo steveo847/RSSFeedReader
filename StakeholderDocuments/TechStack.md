@@ -156,19 +156,28 @@ The backend API and frontend UI run on separate localhost ports. **Port consiste
 
 4. **CORS policy** (configured in `backend/RSSFeedReader.Api/Program.cs`):
 
-   - Must allow the frontend port from step 2
-   - Example: `.WithOrigins("http://localhost:5213", "https://localhost:7025")`
+   - Must allow the exact frontend origin from step 2
+   - The MVP allows `http://localhost:5213`; add another explicit origin only
+     when a corresponding frontend launch profile is configured.
 
 ### Configuration best practices
 
 - **Frontend Program.cs**: Read API URL from configuration, don't hardcode:
 
   ```csharp
-  var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5151/api/";
-  builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiBaseUrl) });
+  var apiBaseUrl = builder.Configuration["ApiBaseUrl"]
+      ?? throw new InvalidOperationException("ApiBaseUrl must be configured.");
+  builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(apiBaseUrl) });
   ```
 
 - **Backend CORS**: Allow the actual frontend ports from launchSettings.json
+
+- **Run the MVP locally** from the repository root in separate terminals:
+
+  ```powershell
+  dotnet run --project backend\RSSFeedReader.Api
+  dotnet run --project frontend\RSSFeedReader.UI
+  ```
 
 - **Testing setup**: Before testing, verify:
 
@@ -177,6 +186,8 @@ The backend API and frontend UI run on separate localhost ports. **Port consiste
   3. CORS allows the frontend origin
 
 **For MVP:** Test by adding subscription URLs and verifying they appear in the list.
+Subscriptions are kept in API process memory, so restarting the backend clears
+the list. The MVP does not request or parse feed URLs.
 
 **For Extended-MVP:** Test with a known-good feed like <https://devblogs.microsoft.com/dotnet/feed/>
 

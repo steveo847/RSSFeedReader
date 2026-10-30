@@ -1,0 +1,75 @@
+@page "/"
+@inject SubscriptionApiClient Api
+
+<PageTitle>Subscriptions</PageTitle>
+
+<h1>Subscriptions</h1>
+
+<form @onsubmit="AddSubscriptionAsync" @onsubmit:preventDefault>
+    <label for="subscription-url">Subscription URL</label>
+    <div class="input-group">
+        <input id="subscription-url"
+               class="form-control"
+               type="text"
+               @bind="url"
+               @bind:event="oninput" />
+        <button class="btn btn-primary" type="submit" disabled="@isSubmitting">Add subscription</button>
+    </div>
+</form>
+
+<p role="status" aria-live="polite">@statusMessage</p>
+
+@if (subscriptions.Length > 0)
+{
+    <ul>
+        @foreach (var subscription in subscriptions)
+        {
+            <li>@subscription</li>
+        }
+    </ul>
+}
+
+@code {
+    private string url = string.Empty;
+    private string statusMessage = string.Empty;
+    private string[] subscriptions = [];
+    private bool isSubmitting;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            subscriptions = await Api.GetAllAsync();
+        }
+        catch (HttpRequestException)
+        {
+            statusMessage = "Subscriptions could not be loaded. Check that the API is running.";
+        }
+    }
+
+    private async Task AddSubscriptionAsync()
+    {
+        if (url.Length == 0 || isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+        statusMessage = string.Empty;
+        try
+        {
+            var addedUrl = await Api.AddAsync(url);
+            subscriptions = [.. subscriptions, addedUrl];
+            url = string.Empty;
+            statusMessage = "Subscription added.";
+        }
+        catch (HttpRequestException)
+        {
+            statusMessage = "Subscription could not be added. Check that the API is running and try again.";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}
